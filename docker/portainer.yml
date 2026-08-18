@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    #ports:
+    #  - "8000:8000"
+    #  - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      wg:
+        ipv4_address: 10.42.42.3
+
+volumes:
+  portainer_data:
+    external: true
+
+networks:
+  wg:
+    external: true
+    name: wireguard_wg
