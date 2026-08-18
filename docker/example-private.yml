@@ -1,0 +1,13 @@
+services:
+  example:
+    image: ghcr.io/example:latest
+    container_name: setup
+    restart: unless-stopped
+    networks:
+      wg:
+        ipv4_address: 10.42.42.x
+
+networks:
+  wg:
+    external: true
+    name: wireguard_wg
