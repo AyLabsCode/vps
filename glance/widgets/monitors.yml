@@ -1,0 +1,33 @@
+- type: monitor
+  cache: 1m
+  title: Core
+  sites:
+    - title: Portainer
+      url: https://10.42.42.3:9443
+      icon: di:portainer
+      allow-insecure: true
+    - title: Traefik
+      url: http://10.42.42.2:8080/dashboard/
+      icon: di:traefik
+      allow-insecure: true
+    - title: Wireguard
+      url: https://wireguard.aylabs.fr
+      icon: di:wireguard  
+    - title: Glance
+      url: http://10.42.42.4:8080
+      icon: di:glance  
+    - title: MySpeed
+      url: http://10.42.42.5:5216
+      icon: di:myspeed
+    - title: Fail2Ban
+      url: http://10.42.42.6:3000
+      icon: https://avatars.githubusercontent.com/u/1087378?s=48&v=4
+      
+- type: monitor
+  cache: 1m
+  title: AyCorp Apps
+  sites:
+    - title: Setup AyLabs
+      url: https://setup.aylabs.fr/
+      icon: sh:microsoft-windows
+    
