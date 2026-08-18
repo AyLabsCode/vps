@@ -1,0 +1,17 @@
+services:
+  myspeed:
+    container_name: myspeed
+    image: germannewsmaker/myspeed:latest
+    networks:
+      wg:
+        ipv4_address: 10.42.42.5
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+
+networks:
+  wg:
+    external: true
+    name: wireguard_wg
