@@ -1,0 +1,76 @@
+version: '3'
+
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    command:
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=xxx"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--accesslog=true"
+      - "--accesslog.filepath=/var/log/traefik/access.log"
+    ports:
+      - "80:80"
+      - "443:443"
+      # - "8080:8080"  # Dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+      - ./traefik-logs:/var/log/traefik
+    networks:
+      traefik:
+      wg:
+        ipv4_address: 10.42.42.2
+
+  fail2ban:
+    image: crazymax/fail2ban:latest
+    container_name: fail2ban
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./traefik-logs:/var/log/traefik:ro
+      - ./fail2ban/jail.local:/etc/fail2ban/jail.local:ro
+      - ./fail2ban/filter.local:/etc/fail2ban/filter.d/traefik.local:ro
+      - /var/lib/fail2ban:/var/lib/fail2ban
+      - /var/log/fail2ban:/var/log/fail2ban
+      - fail2ban-socket:/var/run/fail2ban
+    environment:
+      - TZ=Europe/Paris
+      - F2B_LOG_LEVEL=INFO
+    networks:
+      - traefik
+    restart: unless-stopped
+
+  fail2ban-dashboard:
+    image: ghcr.io/webishdev/fail2ban-dashboard:latest
+    container_name: fail2ban-dashboard
+    user: root
+    volumes:
+      - fail2ban-socket:/var/run/fail2ban:ro
+    networks:
+      traefik:
+      wg:
+        ipv4_address: 10.42.42.6
+
+volumes:
+  fail2ban-socket:
+  crowdsec-db:
+  crowdsec-config:
+  metabase-data:
+
+
+networks:
+  traefik:
+    driver: bridge
+  wg:
+    external: true
+    name: wireguard_wg
